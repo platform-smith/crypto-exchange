@@ -42,23 +42,23 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 4000;
 
 // Connect to MongoDB
-connectDB()
+// Initialize WebSocket server
+  const wss = initializeWebSocketServer(server);
+  
+  // Start the server
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
+    console.log(`WebSocket server is running on ws://localhost:${PORT}`);
+  });
+  connectDB()
   .then(() => {
     console.log(`Server is about to start on port ${PORT}`);
     
-    // Initialize WebSocket server
-    const wss = initializeWebSocketServer(server);
-    console.log('WebSocket server initialized');
     
-    // Start the server
-    server.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-      console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
-      console.log(`WebSocket server is running on ws://localhost:${PORT}`);
-    });
   })
   .catch((error) => {
-    console.error('Failed to connect to MongoDB:', error);
+    console.error('Failed to connwect to MongoDB:', error);
     process.exit(1);
   });
 
